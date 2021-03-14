@@ -1,0 +1,41 @@
+<table class= "table table-striped">
+    <thead>
+        <tr>
+            <th>Item Number</th>
+            <th>Item Name</th>
+            <th>Item Amount</th>
+            <th>Inventory Code</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor = "let item of items">
+            <td>{{ item.itemNumber}}</td>
+            <td>{{ item.itemName}}</td>
+            <td>{{ item.amount}}</td>
+            <td>{{ item.inventoryCode}}</td>
+            <td>
+                <button (click) = "updateItem(item.itemNumber)" class = "btn btn-warning"> Update</button>
+                <button (click) = "deleteItem(item.itemNumber)" class = "btn btn-danger" style="margin-left: 10px"> Delete</button>
+                <button (click) = "itemDetails(item.itemNumber)" class = "btn btn-info" style="margin-left: 10px"> View Details</button>
+                <form (ngSubmit) = "withdraw(item.itemNumber, $event)">
+                    <div class="form-group">
+                        <label> Withdraw Amount:</label>
+                        <input type="number" class ="form-control" id = "decrease"
+                            name = "decrease" name = "itemName"  
+                            >
+                    </div>
+                    <button class = "btn btn-danger" type ="submit">Submit Withdraw</button>
+                </form>
+                <form (ngSubmit) = "deposit(item.itemNumber, $event)">
+                    <div class="form-group">
+                        <label> Increase Amount:</label>
+                        <input type="number" class ="form-control" id = "increase"
+                         name = "increase">
+                    </div>
+                    <button class = "btn btn-danger" type ="submit">Submit Increase</button>
+                </form>
+            </td>
+        </tr>
+    </tbody>
+
+</table>
