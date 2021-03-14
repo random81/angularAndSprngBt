@@ -39,5 +39,3 @@ instructions:
 	go to http://127.0.0.1:4200/
 	you may need to reload web page after first item creation.
 	
-	docker tag local-image:tagname new-repo:tagname
-docker push new-repo:tagname
