@@ -8,13 +8,9 @@ import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-//@Configuration
-//@EnableSwagger2
-@Configuration //@EnableSwagger2WebMvc
+@Configuration
 @EnableWebMvc
-//@EnableSwagger2
 public class SwaggerConfig implements WebMvcConfigurer {
 
     @Bean

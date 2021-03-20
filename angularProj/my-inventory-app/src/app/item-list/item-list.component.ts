@@ -29,15 +29,23 @@ export class ItemListComponent implements OnInit {
     const inputValue = event.target.increase.value;
     console.log(inputValue);
     this.itemService.depositItem(id, inputValue, this.item).subscribe(data => {
+     this.getItems();
+     this.goToItemList();
     }, error => console.log(error));
-      window.location.reload();
+      //window.location.reload();
   }
 
   withdraw(id: number, event: any) {
+     this.withdrawNow(id, event);
+  }
+
+  withdrawNow(id: number, event: any) {
     const inputValue = event.target.decrease.value;
     this.itemService.withdrawItem(id, inputValue, this.item).subscribe(data => {
+     this.getItems();
+     this.goToItemList();
     }, error => console.log(error));
-      window.location.reload();
+      //window.location.reload();
   }
 
   private getItems() {

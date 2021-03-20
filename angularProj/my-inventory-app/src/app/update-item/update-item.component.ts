@@ -23,13 +23,18 @@ export class UpdateItemComponent implements OnInit {
     }, error => console.log(error));
   }
 
-  onSubmit(){
+  updateItem(){
     this.itemService.updateItem(this.itemNumber, this.item).subscribe( data =>{
       this.goToItemList();
-    }
-    , error => console.log(error));
-    this.router.navigate(['/items']);
+    },
+    error => console.log(error));
   }
+
+  onSubmit(){
+    console.log(this.item);
+    this.updateItem();
+  }
+
 
   goToItemList(){
     this.router.navigate(['/items']);

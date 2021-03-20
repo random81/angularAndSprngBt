@@ -20,15 +20,15 @@ export class CreateItemComponent implements OnInit {
 
   saveItem(){
     this.itemService.createItem(this.item).subscribe( data =>{
+      this.goToItemList();
     },
     error => console.log(error));
-      this.goToItemList();
   }
 
   goToItemList(){
     this.router.navigate(['/items']);
   }
-  
+
   onSubmit(){
     console.log(this.item);
     this.saveItem();

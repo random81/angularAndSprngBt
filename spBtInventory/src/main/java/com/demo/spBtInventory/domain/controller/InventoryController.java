@@ -1,4 +1,6 @@
 package com.demo.spBtInventory.domain.controller;
+import com.demo.spBtInventory.domain.controller.CombinedTables;
+import com.demo.spBtInventory.domain.repository.InventoryCodeRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.demo.spBtInventory.domain.entity.Inventory;
@@ -22,12 +24,16 @@ public class InventoryController {
 
     @Autowired
     private InventoryRepository inventoryRepository;
+    @Autowired
+    private InventoryCodeRepository inventoryCodeRepository;
 
     // get all items
     @GetMapping("/inventory")
-    public List<Inventory> listAllItems(){
-        return inventoryRepository.findAll();
+    public List<CombinedTables> listAllItems(){
+        System.out.println(this.inventoryRepository.joinedTables());
+        return this.inventoryRepository.joinedTables();
     }
+
 
     @PostMapping("/inventory")
     @ResponseStatus(HttpStatus.CREATED)
@@ -48,13 +54,11 @@ public class InventoryController {
     @GetMapping("/inventory/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Execute GET method to get details")
-    //public String getDetails(@PathVariable Long id) throws JsonProcessingException {
     public ResponseEntity<String> getDetails(@PathVariable Long id) throws JsonProcessingException {
         Inventory foundItem = inventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
-        System.out.println(foundItem);
+        //System.out.println(foundItem);
         ObjectMapper objectMapper = new ObjectMapper();
-        String jsonInString = foundItem.getItemDetails();
         Details detail = new Details();
         detail.itemDeets = foundItem.getItemDetails();
         String jsonyString = objectMapper.writeValueAsString(detail);
@@ -68,10 +72,18 @@ public class InventoryController {
     @GetMapping("/inventory/item/{id}")
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Execute GET method for one item")
-    public ResponseEntity<Inventory> list(@PathVariable Long id) {
+    public ResponseEntity<CombinedTables> list(@PathVariable Long id) {
         Inventory foundItem = inventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
-        return ResponseEntity.ok().body(foundItem);
+
+        CombinedTables combined = new CombinedTables(foundItem.getItemNumber(),
+                foundItem.getAmount(),
+                foundItem.getItemDetails(),
+                foundItem.getItemName(),
+                foundItem.getInventoryCodeValue()
+        );
+        //return ResponseEntity.ok().body(foundItem);
+        return ResponseEntity.ok().body(combined);
     }
 
     // update inventory item
@@ -80,6 +92,7 @@ public class InventoryController {
     @ApiOperation(value = "Execute PUT method for update")
     public ResponseEntity<Inventory> updateItem_whenPutItem(@RequestBody Inventory item, @PathVariable Long id) {
         inventoryRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(id));
+        item.fixInvenoryCode(item.getItemNumber());
         return ResponseEntity.ok().body(inventoryRepository.save(item));
     }
 
@@ -98,11 +111,19 @@ public class InventoryController {
     @ResponseStatus(HttpStatus.OK)
     @ApiOperation(value = "Execute a subtraction of amount using PUT method")
     public ResponseEntity<Inventory> withDraw_whenPutItem(@RequestBody Inventory item, @PathVariable Long amt, @PathVariable Long id) {
+
         Inventory itemOrig = new Inventory();
         itemOrig = inventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
         itemOrig.setAmount(itemOrig.getAmount()-amt);
-        return ResponseEntity.ok().body(inventoryRepository.save(itemOrig));
+        itemOrig.fixInvenoryCode(itemOrig.getItemNumber());
+        Inventory createdItem = inventoryRepository.save(itemOrig);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdItem.getItemNumber())
+                .toUri();
+        createdItem.getInventoryCode().setInventory(null);
+        return ResponseEntity.created(uri).body(createdItem);
     }
 
     // deposit item rest api
@@ -114,7 +135,15 @@ public class InventoryController {
         itemOrig = inventoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id));
         itemOrig.setAmount(itemOrig.getAmount()+amt);
-        return ResponseEntity.ok().body(inventoryRepository.save(itemOrig));
+        itemOrig.fixInvenoryCode(itemOrig.getItemNumber());
+        Inventory createdItem = inventoryRepository.save(itemOrig);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdItem.getItemNumber())
+                .toUri();
+        createdItem.getInventoryCode().setInventory(null);
+        return ResponseEntity.created(uri).body(createdItem);
+
     }
 
 

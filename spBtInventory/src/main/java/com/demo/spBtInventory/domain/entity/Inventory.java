@@ -1,13 +1,9 @@
 package com.demo.spBtInventory.domain.entity;
-
-//package com.com.example.inventorySpring.domain.entity.inventory;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+
 
 @Data
 @NoArgsConstructor
@@ -17,7 +13,7 @@ import java.io.Serializable;
 public class Inventory implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long itemNumber; //itemNumber
 
     @Column(name = "item_name")
@@ -29,20 +25,37 @@ public class Inventory implements Serializable {
     @Column(name = "amount")
     private Long amount;
 
-    @Column(name = "Inventory_code")
-    private Long InventoryCode;
-
     public void setAmount(Long amt){
         this.amount = amt;
     }
     public Long getAmount(){
         return this.amount;
     }
-    public void setInventoryCode(Long InventoryCode){
-        this.InventoryCode = InventoryCode;
+/*
+    @OneToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="itemNumber", referencedColumnName ="id" )
+    */
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id")
+    private InventoryCode inventoryCode;
+
+    public void fixInvenoryCode(Long x){
+        this.inventoryCode.setId(x);
     }
-    public Long getInventoryCode(){
-        return this.InventoryCode;
+
+    public String toString(){
+        return "";
+    }
+
+    public String getInventoryCodeValue(){
+        return inventoryCode.getInventoryCode();
+    }
+    public InventoryCode getInventoryCode(){
+        return inventoryCode;
+    }
+    public void setInventoryCode(InventoryCode inventoryCode){
+        this.inventoryCode= inventoryCode;
     }
     public void setItemName(String name){
         this.itemName = name;
@@ -56,10 +69,10 @@ public class Inventory implements Serializable {
     public String getItemDetails(){
         return this.itemDetails;
     }
-
     public Long getItemNumber(){
         return this.itemNumber;
     }
+
 
 }
 
